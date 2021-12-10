@@ -1,0 +1,5 @@
+{
+    "python.pythonPath": "/Users/gasserelazab/.msvscode.hdinsight/hdinsightJupyter/bin/python",
+    "python.defaultInterpreterPath": "/Users/gasserelazab/.msvscode.hdinsight/hdinsightJupyter/bin/python",
+    "jupyter.jupyterLaunchTimeout": 240000
+}

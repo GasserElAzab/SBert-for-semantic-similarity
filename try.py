@@ -1,4 +1,4 @@
-from sentence_transformers import SentenceTransformer, util
+# from sentence_transformers import SentenceTransformer, util
 # model = SentenceTransformer('all-MiniLM-L6-v2')
 # print(">>>>>>>>>>>>>>>>>>>>>>>>>>> print embeddings for sentences <<<<<<<<<<<<<<<<<< ")
 
@@ -70,20 +70,23 @@ import torch
 from datasets import load_dataset
 import pandas as pd
 import numpy as np
+from sentence_transformers import SentenceTransformer, util,models
+from torch import nn
 # import tensorflow_datasets as tfds
 
 
 #This is a pre trained bert model, but not fine tuned as the professor said
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-model = BertModel.from_pretrained("bert-base-uncased")
+model1 = BertModel.from_pretrained("bert-base-uncased")
+model2 = BertModel.from_pretrained("bert-base-uncased")
+
 # text = "Replace me by any text you'd like."
 # encoded_input = tokenizer(text,return_tensors='pt')
 # output = model(**encoded_input)
 # # print(output)
 
 #load datas
-
 sts_train=pd.read_csv("stsbenchmark/sts-train.csv",sep='\t',header=None,usecols=[4, 5, 6], quoting=QUOTE_NONE,names=["label","sen1","sen2"])
 sts_test=pd.read_csv("stsbenchmark/sts-test.csv",sep='\t',header=None,usecols=[4, 5, 6], quoting=QUOTE_NONE,names=["label","sen1","sen2"])
 sts_dev=pd.read_csv("stsbenchmark/sts-dev.csv",sep='\t',header=None,usecols=[4, 5, 6], quoting=QUOTE_NONE,names=["label","sen1","sen2"])
@@ -104,16 +107,18 @@ dev_sen2_encoding= tokenizer(list(sts_dev["sen2"]), padding="max_length", trunca
 dev_labels=list(sts_dev["label"])
 
 print("End of tokenizing the data")
-print(train_sen1_encoding)
+# print(train_sen1_encoding)
 
 
 
 
 # Regression training objective
 # The normal bert should be tuned using STS dataset, cosine similiarty, and mapping using the provided table
+pooling_layer1= models.Pooling(768,pooling_mode_mean_tokens=True) #BERT MODEL DIMENSION IS 768
+pooling_layer2= models.Pooling(768,pooling_mode_mean_tokens=True)
 
-
-
+final_model1= SentenceTransformer(modules=[model1,pooling_layer1])
+embedding=final_model1.encode(train_sen1_encoding, batch_size=128, convert_to_numpy=True, show_progress_bar=True)
 
 #Classification objective (using the same embedding from the first task)
 # using NLI dataset
